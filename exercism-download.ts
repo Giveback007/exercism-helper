@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 
 import { spawn } from 'child_process';
-import { readdirSync } from 'fs';
+import { existsSync, mkdirSync, readdirSync } from 'fs';
 import { join } from 'path';
 import { createInterface } from 'readline/promises';
 
@@ -32,7 +32,7 @@ class ExercismCLI {
             allData.push({data: data + '', err: true}));
 
         child.on('close', exitCode => res({
-            fullMsg: allData.map(x => x.data).join('\n'),
+            fullMsg: allData.map(x => x.data).join(''),
             isOk: exitCode === 0,
             exitCode, allData,
         }))
@@ -68,8 +68,9 @@ class ExercismCLI {
 
         log('--- // --- // ---')
         log(`${isOk ? '✅' : '❌'} [${track}]: "${exercise}":`)
-        log(fullMsg)
-        // allData.forEach(x => x.err ? logErr(x.data) : log(x.data))
+        if (isOk) log(fullMsg)
+        else logErr(fullMsg)
+        log('--- // --- // ---')
 
         if (alreadyExists) return 'alreadyExists'
         if (notUnlocked) return 'locked'
@@ -139,6 +140,7 @@ setTimeout(async () => {
     _tracks.forEach(t => tracks[t.is_joined ? 'enr' : 'not'].push(t));
 
     const wsPath = await CLI.getWorkspace();
+    if (!existsSync(wsPath)) mkdirSync(wsPath);
     const ws = readdirSync(wsPath);
     const wsSet = new Set(ws);
 
