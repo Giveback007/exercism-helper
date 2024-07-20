@@ -1,0 +1,65 @@
+{
+    // "$schema": "https://json.schemastore.org/tsconfig",
+    "display": "Node.js",
+    "ts-node": {
+        "transpileOnly": true,
+        "files": true,
+        "esm": true
+    },
+    "compilerOptions": {
+        "module": "ESNext",
+        "moduleResolution": "node",
+        "target": "ESNext",
+
+        /* -- Basic Options -- */
+        "lib": ["DOM", "dom.iterable", "ES2021"],
+        "allowJs": true,
+        "checkJs": true,
+        "declaration": false,
+        "rootDir": "./",
+        "removeComments": false,
+        "isolatedModules": false,
+        "importHelpers": true,
+        "downlevelIteration": true,
+        "sourceMap": true,
+
+        /* Additional Options */
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+
+        /* -- Strict Type-Checking Options -- */
+        "strict": false,
+        "noImplicitThis": true,
+        "noImplicitAny": true,
+        "alwaysStrict": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "strictBindCallApply": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noFallthroughCasesInSwitch": false,
+        "useUnknownInCatchVariables": false,
+
+
+        /* -- Module Resolution Options -- */
+        "baseUrl": "./",
+        "paths": {
+            "*": ["node_modules/*"]
+        },
+        "typeRoots": [
+            "./node_modules/@types",
+            "./**/@types"
+        ],
+
+        /* -- Svelte Specific Options -- */
+        "verbatimModuleSyntax": true
+    }
+}
