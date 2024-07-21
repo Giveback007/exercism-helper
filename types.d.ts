@@ -2,7 +2,7 @@ type Dict<T> = { [P: string]: T; };
 
 type TrackData = {
   track: LangTrack;
-  exercises: Dict<Exercise[]>;
+  exercises: Dict<Exercise>;
   downloaded: Set<string>;
 }
 
@@ -29,11 +29,13 @@ interface LangTrack {
         exercises: string;
         concepts: string;
     };
-    is_joined?: boolean;
     num_learnt_concepts: number;
     num_completed_exercises: number;
     num_solutions: number;
     has_notifications: boolean;
+
+    is_joined?: boolean;
+    num_unlocked_exercises?: number;
 }
 
 interface Exercise {

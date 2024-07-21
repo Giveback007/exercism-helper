@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A folder for scrap code/scripts",
   "scripts": {
-    "start": "tsx exercism-download.ts"
+    "start": "tsx main.ts"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",
