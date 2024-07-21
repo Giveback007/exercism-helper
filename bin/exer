@@ -1,2 +1,2 @@
 #!/bin/bash
-cd "$(dirname "$0")" && cd.. && npm start
+cd "$(dirname "$0")" && cd .. && npm start
