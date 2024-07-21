@@ -89,7 +89,7 @@ setTimeout(async () => {
         }));
 
         print.downloadOutcome(outcome);
-        await wait(2000)
+        await wait(2500)
     }
 });
 
