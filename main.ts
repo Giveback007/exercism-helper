@@ -67,6 +67,7 @@ setTimeout(async () => {
 
         const toDownload = Object.values(tr.exercises).filter(ex => ex.is_unlocked).slice(0, numToDownload);
 
+        log(`Downloading ${toDownload.length} exercises...\n`)
         await Promise.all(toDownload.map(async ex => {
             if (ex.is_downloaded) {
                 outcome.alreadyExists++
