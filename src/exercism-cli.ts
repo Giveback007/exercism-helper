@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { logErr, log, ask } from "./utils";
+import { logErr, log, ask, errorLogger, errorAndExit } from "./utils";
 
 export class ExercismCLI {
     runCli = (args: string[] = []) => new Promise<{
@@ -37,24 +37,24 @@ export class ExercismCLI {
 
     /** Test if 'Exercism CLI' is installed */
     test = async () => {
-        const test = await this.runCli();
-        if (test.fullMsg.includes('ENOENT')) return false
+        const { isOk, exitCode, fullMsg } = await this.runCli();
+        if (fullMsg.includes('ENOENT')) return false
 
-        if (test.fullMsg.includes('your Exercism workspace')) return true
+        if (fullMsg.includes('your Exercism workspace')) return true
 
-        logErr(test)
-        throw 'Unhandled'
+        logErr({ isOk, exitCode, fullMsg })
+        throw errorAndExit({ isOk, exitCode, fullMsg }, 'Unhandled')
     }
 
     /** Try to add the token and return `true` if succeeds */
     addToken = async (token: string) => {
-        const { isOk, fullMsg } = await this.runCli([
+        const { isOk, fullMsg, exitCode } = await this.runCli([
             'configure',
             `--token=${token}`,
         ]);
 
         if (!isOk && fullMsg.includes('is invalid.')) return false
-        if (!isOk) throw 'Unhandled';
+        if (!isOk) errorAndExit({ isOk, exitCode, fullMsg }, 'Unhandled');
 
         return true;
     }
@@ -67,25 +67,25 @@ export class ExercismCLI {
                 token = await ask.addToken()
             }
 
-            throw `getToken(): Exited with code ${exitCode} (no OK)`;
+            errorAndExit({ isOk, exitCode, fullMsg }, `getToken(): Exited with code ${exitCode} (no OK)`)
         } else {
             token = fullMsg.split('\n').find(s => s.includes('Token:'))?.split(' ').at(-1) || null;
         }
 
-        if (!token) throw "Couldn't retrieve the token"
+        if (!token) throw errorAndExit({ isOk, exitCode, fullMsg }, "Couldn't retrieve the token")
 
         return token
     }
 
     getWorkspace = async () => {
         const { isOk, exitCode, fullMsg } = await this.runCli(['workspace']);
-        if (!isOk) throw `getToken(): Exited with code ${exitCode} (no OK)`;
+        if (!isOk) errorAndExit({ isOk, exitCode, fullMsg }, `getToken(): Exited with code ${exitCode} (no OK)`)
 
         return fullMsg.replace('\n', '')
     }
 
-    downloadExr = async (track: string, exercise: string) => { // 'ok' | 'alreadyExists' | 'locked'
-        const { allData, isOk, fullMsg } = await this.runCli([
+    downloadExr = async (track: string, exercise: string) => {
+        const { allData, isOk, exitCode, fullMsg } = await this.runCli([
             "download",
             `--track=${track}`,
             `--exercise=${exercise}`
@@ -103,6 +103,6 @@ export class ExercismCLI {
         if (notUnlocked) return 'locked'
         if (isOk) return 'ok'
 
-        throw 'Unhandled CLI'
+        throw errorAndExit({ isOk, exitCode, fullMsg }, 'Unhandled CLI')
     }
 }

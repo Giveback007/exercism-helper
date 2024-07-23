@@ -142,3 +142,31 @@ export const ask = {
         return numToDownload;
     }
 }
+
+export function errorLogger(...errs: any[]) {
+    const e = new Error();
+    const regex = /\((.*):(\d+):(\d+)\)$/
+    const match = regex.exec(e.stack!.split("\n")[2]!);
+
+    logErr('\n[Error]:')
+    if (match && match.length >= 3)
+        log(`${match[1]}:${match[2]}:${match[3]}`)
+
+    logErr(...errs)
+    log()
+}
+
+export function errorAndExit(...errs: any[]) {
+    const e = new Error();
+    const regex = /\((.*):(\d+):(\d+)\)$/
+    const match = regex.exec(e.stack!.split("\n")[2]!);
+
+    logErr('\n[Error]:')
+    if (match && match.length >= 3)
+        log(`${match[1]}:${match[2]}:${match[3]}`)
+
+    logErr(...errs)
+    log()
+
+    process.exit(1)
+}

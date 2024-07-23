@@ -21,7 +21,7 @@ setTimeout(async () => {
         process.exit(1)
     }
 
-    const token = await CLI.getToken()
+    const token = await CLI.getToken();
     const API = new ExercismAPI(token);
 
     const { tracks, dict } = await loadTrackData(API, CLI);
@@ -99,4 +99,3 @@ setTimeout(async () => {
         await wait(2500)
     }
 });
-
