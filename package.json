@@ -1,12 +1,16 @@
 {
-  "name": "exercism-helper",
+  "name": "exer-h",
   "version": "1.0.0",
-  "description": "A folder for scrap code/scripts",
+  "description": "Exercism-helper, a wrapper to help bulk download exercism lessons",
+  "bin": "./dist/cli.js",
   "scripts": {
-    "start": "tsx main.ts"
+    "start": "tsx src/cli.ts",
+    "build": "pkgroll --clean-dist"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",
-    "tsx": "*"
+    "pkgroll": "^2.4.1",
+    "tsx": "^4.16.2",
+    "typescript": "^5.5.4"
   }
 }

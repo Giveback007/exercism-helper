@@ -49,6 +49,7 @@
         "useUnknownInCatchVariables": false,
 
 
+
         /* -- Module Resolution Options -- */
         "baseUrl": "./",
         "paths": {
@@ -61,5 +62,8 @@
 
         /* -- Svelte Specific Options -- */
         "verbatimModuleSyntax": true
-    }
+    },
+    "exclude": [
+        "./dist"
+    ]
 }
