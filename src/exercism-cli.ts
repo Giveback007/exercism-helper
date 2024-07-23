@@ -1,5 +1,6 @@
 import { spawn } from "child_process";
-import { logErr, log, ask, errorLogger, errorAndExit } from "./utils";
+import { logErr, log, ask } from "./utils";
+import { errorAndExit } from "./error.util";
 
 export class ExercismCLI {
     runCli = (args: string[] = []) => new Promise<{
@@ -62,11 +63,9 @@ export class ExercismCLI {
     getToken = async () => {
         let token: string | null = null;
         const { isOk, exitCode, fullMsg } = await this.runCli(['configure', 'help']);
-        if (!isOk) {
-            if (fullMsg.includes('Error: There is no token configured.')) {
-                token = await ask.addToken()
-            }
-
+        if (!isOk && fullMsg.includes('Error: There is no token configured.')) {
+            token = await ask.addToken();
+        } else if(!isOk) {
             errorAndExit({ isOk, exitCode, fullMsg }, `getToken(): Exited with code ${exitCode} (no OK)`)
         } else {
             token = fullMsg.split('\n').find(s => s.includes('Token:'))?.split(' ').at(-1) || null;

@@ -16,7 +16,8 @@ setTimeout(async () => {
 
     const CLI = new ExercismCLI();
     if (!await CLI.test()) {
-        log('Please make sure Exercism is installed:');
+        console.clear()
+        logErr('Please make sure Exercism is installed:');
         log('Goto: https://exercism.org/docs/using/solving-exercises/working-locally#h-installing-the-cli');
         process.exit(1)
     }
