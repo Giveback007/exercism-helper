@@ -3,18 +3,14 @@
 import { ExercismAPI } from './exercism-api';
 import { ExercismCLI } from './exercism-cli';
 import {
-    ask,
-    loadTrackData, log, logErr, print,
-    wait
+    ask, loadTrackData, log, logErr, print, wait
 } from './utils';
-
-
 
 log('// -- Exercism Download Helper -- //')
 setTimeout(async () => {
     log('Loading tracks...')
 
-    const CLI = new ExercismCLI();
+    const CLI = ExercismCLI;
     if (!await CLI.test()) {
         console.clear()
         logErr('Please make sure Exercism is installed:');
@@ -23,23 +19,25 @@ setTimeout(async () => {
     }
 
     const token = await CLI.getToken();
+    const ws = await CLI.getWorkspace();
+
     const API = new ExercismAPI(token);
 
-    const { tracks, dict } = await loadTrackData(API, CLI);
+    const { tracks, dict } = await loadTrackData(API);
 
     while (true) {
-        console.clear()
+        console.clear();
         print.trackTable(tracks, dict);
 
-        const trackName = await ask.trackName(dict)
+        const trackName = await ask.trackName(dict);
         const tr = dict[trackName]!
 
         if (!Object.keys(tr.exercises).length) {
-            log(`Loading exercises for: "${tr.track.title}"...\n`)
-            const _exrs = await API.getExercises(trackName)
+            log(`Loading exercises for: "${tr.track.title}"...\n`);
+            const _exrs = await API.getExercises(trackName);
 
-            const completed = _exrs.slice(_exrs.length - tr.track.num_completed_exercises)
-            const incomplete = _exrs.slice(0, _exrs.length - tr.track.num_completed_exercises)
+            const completed = _exrs.slice(_exrs.length - tr.track.num_completed_exercises);
+            const incomplete = _exrs.slice(0, _exrs.length - tr.track.num_completed_exercises);
 
             tr.track.num_unlocked_exercises = incomplete.filter(x => x.is_unlocked).length;
             completed.forEach(x => x.is_completed = true);
@@ -47,7 +45,7 @@ setTimeout(async () => {
             const exrs = [...incomplete, ...completed];
 
             exrs.forEach((ex) => {
-                ex.is_downloaded = tr.downloaded.has(ex.slug)
+                ex.is_downloaded = tr.downloaded.has(ex.slug);
                 if (ex.is_completed && ex.is_downloaded) {
                     // ! TODO:
                     // "Deleting completed exercises..."
@@ -58,7 +56,7 @@ setTimeout(async () => {
         }
 
         const exrs = Object.values(tr.exercises);
-        print.exerciseTable(exrs);
+        print.exerciseTable(exrs, tr.track.slug, ws);
 
         let numToDownload = await ask.howManyToDownload();
         console.clear();

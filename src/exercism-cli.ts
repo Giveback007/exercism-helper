@@ -3,7 +3,7 @@ import { logErr, log, ask } from "./utils";
 import { errorAndExit } from "./error.util";
 
 export class ExercismCLI {
-    runCli = (args: string[] = []) => new Promise<{
+    static runCli = (args: string[] = []) => new Promise<{
         fullMsg: string;
         isOk: boolean;
         exitCode: number | null;
@@ -37,18 +37,18 @@ export class ExercismCLI {
     })
 
     /** Test if 'Exercism CLI' is installed */
-    test = async () => {
+    static test = async () => {
         const { isOk, exitCode, fullMsg } = await this.runCli();
-        if (fullMsg.includes('ENOENT')) return false
+        if (fullMsg.includes('ENOENT')) return false;
 
-        if (fullMsg.includes('your Exercism workspace')) return true
+        if (fullMsg.includes('your Exercism workspace')) return true;
 
         logErr({ isOk, exitCode, fullMsg })
         throw errorAndExit({ isOk, exitCode, fullMsg }, 'Unhandled')
     }
 
     /** Try to add the token and return `true` if succeeds */
-    addToken = async (token: string) => {
+    static addToken = async (token: string) => {
         const { isOk, fullMsg, exitCode } = await this.runCli([
             'configure',
             `--token=${token}`,
@@ -60,7 +60,7 @@ export class ExercismCLI {
         return true;
     }
 
-    getToken = async () => {
+    static getToken = async () => {
         let token: string | null = null;
         const { isOk, exitCode, fullMsg } = await this.runCli(['configure', 'help']);
         if (!isOk && fullMsg.includes('Error: There is no token configured.')) {
@@ -76,14 +76,14 @@ export class ExercismCLI {
         return token
     }
 
-    getWorkspace = async () => {
+    static getWorkspace = async () => {
         const { isOk, exitCode, fullMsg } = await this.runCli(['workspace']);
         if (!isOk) errorAndExit({ isOk, exitCode, fullMsg }, `getToken(): Exited with code ${exitCode} (no OK)`)
 
         return fullMsg.replace('\n', '')
     }
 
-    downloadExr = async (track: string, exercise: string) => {
+    static downloadExr = async (track: string, exercise: string) => {
         const { allData, isOk, exitCode, fullMsg } = await this.runCli([
             "download",
             `--track=${track}`,
@@ -93,7 +93,7 @@ export class ExercismCLI {
         const alreadyExists = allData.find(x => x.data.includes('already exists'))
         const notUnlocked = allData.find(x => x.data.includes('not unlocked'))
 
-        log('--- // --- // ---')
+        log('--- // --- // ---');
         log(`${isOk ? '✅' : '❌'} [${track}]: "${exercise}":`)
         if (isOk) log(fullMsg)
         else logErr(fullMsg)

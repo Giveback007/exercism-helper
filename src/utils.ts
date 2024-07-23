@@ -11,7 +11,8 @@ export const log = console.log;
 
 export const logErr = console.error;
 
-export async function loadTrackData(API: ExercismAPI, CLI: ExercismCLI) {
+export async function loadTrackData(API: ExercismAPI) {
+    const CLI = ExercismCLI
     const tracks = (await API.getTracks()).filter(t => t.is_joined);
 
     const wsPath = await CLI.getWorkspace();
@@ -40,7 +41,7 @@ export const print = {
 
         const c1 = status
         const c2 = (idx + 1 + '').padEnd(3)
-        const c3 = `${ex.title}`.padEnd(20)
+        const c3 = `${ex.slug}`.padEnd(20)
 
         log(`| ${c1} | ${c2} | ${c3}`)
     },
@@ -51,16 +52,18 @@ export const print = {
  🔗 - Available For Download
  🔒 - Locked\n`),
 
-    exerciseTable(exrs: Exercise[]) {
-        let titleLen = 0;
-        let slugLen = 0;
-        exrs.forEach(ex => {
-            if (ex.title.length > titleLen) titleLen = ex.title.length;
-            if (ex.slug.length > slugLen) slugLen = ex.slug.length;
-        })
+    nextExercise(exr: Exercise, track: string, ws: string) {
+        log(`< Next Exercise >`)
+        log(`(${exr.difficulty})`, `"${exr.title}"`)
+        log('>>>', exr.blurb)
+        log('[ Web-Path ]:', `https://exercism.org/${exr.links.self}`)
+        log('[Local-Path]:',join(ws, track, exr.slug))
+    },
 
+    exerciseTable(exrs: Exercise[], track: string, ws: string) {
         exrs.forEach((ex, i) => print.exerciseRow(i, ex));
-        print.exerciseTableKey()
+        print.exerciseTableKey();
+        if (exrs[0]?.is_downloaded) print.nextExercise(exrs[0], track, ws)
     },
 
     downloadOutcome(outcome: DownloadOutcome) {
@@ -73,20 +76,23 @@ export const print = {
 
     trackTable(tracks: LangTrack[], trackDict: Dict<TrackData>) {
         log("< Joined Tracks >")
-        log('| Track           | Completed | Downloaded |')
-        log('|-----------------|-----------|------------|')
+        log("/--------------------------------------\\")
+        log("| Track           | Progress  | Dwl'ed |")
+        log("|-----------------|-----------|--------|")
         tracks.forEach(t => {
             const c1 = `${t.title} `.padEnd(15);
             const c2 = `${t.num_completed_exercises} / ${t.num_exercises}`.padEnd(9)
-            const c3 = `${trackDict[t.slug]?.downloaded.size || 0}`.padEnd(10)
+            const c3 = `${trackDict[t.slug]?.downloaded.size || 0}`.padEnd(6)
             log(`| ${c1} | ${c2} | ${c3} |`)
         });
+        log("\\--------------------------------------/")
+        log('Add more here: "https://exercism.org/tracks"')
     }
 }
 
 export const ask = {
     addToken: async (): Promise<string> => {
-        const CLI = new ExercismCLI();
+        const CLI = ExercismCLI;
         const rl = createInterface({ input: process.stdin, output: process.stdout });
 
         let isOk = false;
@@ -106,19 +112,15 @@ export const ask = {
     trackName: async (dict: Dict<TrackData>) => {
         const rl = createInterface({ input: process.stdin, output: process.stdout });
 
-        let trackName: string | null = null
+        let trackName: string | null = null;
         while (!trackName) {
-            log("\ntype 'exit' to quit")
-            trackName = (await rl.question(`(From 'joined') Select a 'track':\n`)).toLowerCase()
-            if (trackName === 'exit') {
-                console.clear()
-                log('Exiting App...')
-                process.exit(0)
-            }
+            log("\ntype 'exit' to quit");
+            trackName = (await rl.question(`(From 'joined') Select a 'track':\n`)).toLowerCase();
+            if (trackName === 'exit') exit();
 
             if (!dict[trackName]) {
-                log(`["${trackName}"] is not in the list of your 'joined' tracks`)
-                trackName = null
+                log(`["${trackName}"] is not in the list of your 'joined' tracks`);
+                trackName = null;
             }
         }
 
@@ -129,9 +131,12 @@ export const ask = {
     howManyToDownload: async () => {
         const rl = createInterface({ input: process.stdin, output: process.stdout });
 
-        let numToDownload: number | null = null
-        while (!numToDownload) {
-            const response = await rl.question(`\nHow many non-completed to download: `)
+        let numToDownload: number | null = null;
+        while (numToDownload === null) {
+            log("\ntype 'exit' to quit");
+            const response = await rl.question(`How many non-completed to download: `);
+            if (response === 'exit') exit();
+
             numToDownload = Number(response);
             if (numToDownload !== numToDownload) {
                 log(`"${response}" is an invalid number, please try again...`)
@@ -142,4 +147,10 @@ export const ask = {
         rl.close();
         return numToDownload;
     }
+}
+
+function exit() {
+    console.clear();
+    log('Exiting App...');
+    process.exit(0);
 }
