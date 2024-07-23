@@ -1,5 +1,5 @@
 import type { ExercismAPI } from './exercism-api';
-import type { ExercismCLI } from './exercism-cli';
+import { ExercismCLI } from './exercism-cli';
 
 import { createInterface } from 'readline/promises';
 import { existsSync, mkdirSync, readdirSync } from 'fs';
@@ -35,7 +35,7 @@ export const print = {
     exerciseRow(idx: number, ex: Exercise) {
         const status = ex.is_completed ? '✅'
             : ex.is_downloaded ? '📦'
-            : ex.is_unlocked ? '🌐'
+            : ex.is_unlocked ? '🔗'
             : '🔒'
 
         const c1 = status
@@ -48,7 +48,7 @@ export const print = {
     exerciseTableKey: () => log(`\n Key:
  ✅ - Completed
  📦 - Downloaded
- 🌐 - Available For Download
+ 🔗 - Available For Download
  🔒 - Locked\n`),
 
     exerciseTable(exrs: Exercise[]) {
@@ -85,6 +85,23 @@ export const print = {
 }
 
 export const ask = {
+    addToken: async (): Promise<string> => {
+        const CLI = new ExercismCLI();
+        const rl = createInterface({ input: process.stdin, output: process.stdout });
+
+        let isOk = false;
+        while (!isOk) {
+            log('1. Goto: https://exercism.org/settings/api_cli');
+            log('2. Copy the "AUTHENTICATION TOKEN"');
+            const response = await rl.question(`3. Add the token here: `)
+
+            isOk = await CLI.addToken(response);
+            if (!isOk) logErr(`\nERROR: The token '${response}' is invalid.\n`)
+        }
+
+        return await CLI.getToken();
+    },
+
     trackName: async (dict: Dict<TrackData>) => {
         const rl = createInterface({ input: process.stdin, output: process.stdout });
 
@@ -93,7 +110,8 @@ export const ask = {
             log("\ntype 'exit' to quit")
             trackName = (await rl.question(`(From 'joined') Select a 'track':\n`)).toLowerCase()
             if (trackName === 'exit') {
-                log('Exiting...')
+                console.clear()
+                log('Exiting App...')
                 process.exit(0)
             }
 

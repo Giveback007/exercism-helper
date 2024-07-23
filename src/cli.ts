@@ -15,7 +15,14 @@ setTimeout(async () => {
     log('Loading tracks...')
 
     const CLI = new ExercismCLI();
-    const API = new ExercismAPI();
+    if (!await CLI.test()) {
+        log('Please make sure Exercism is installed:');
+        log('Goto: https://exercism.org/docs/using/solving-exercises/working-locally#h-installing-the-cli');
+        process.exit(1)
+    }
+
+    const token = await CLI.getToken()
+    const API = new ExercismAPI(token);
 
     const { tracks, dict } = await loadTrackData(API, CLI);
 

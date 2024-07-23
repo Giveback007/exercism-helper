@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { logErr, log } from "./utils";
+import { logErr, log, ask } from "./utils";
 
 export class ExercismCLI {
     runCli = (args: string[] = []) => new Promise<{
@@ -15,6 +15,13 @@ export class ExercismCLI {
 
         const allData: {err?: boolean, data: string}[] = [];
 
+        child.on('error', error => res({
+            fullMsg: error.message,
+            isOk: false,
+            exitCode: null,
+            allData: [{ err: true, data: error.message }]
+        }))
+
         child.stdout.on('data', (data: any) =>
             allData.push({data: data + ''}));
 
@@ -26,18 +33,49 @@ export class ExercismCLI {
             isOk: exitCode === 0,
             exitCode, allData,
         }))
-    });
+    })
+
+    /** Test if 'Exercism CLI' is installed */
+    test = async () => {
+        const test = await this.runCli();
+        if (test.fullMsg.includes('ENOENT')) return false
+
+        if (test.fullMsg.includes('your Exercism workspace')) return true
+
+        logErr(test)
+        throw 'Unhandled'
+    }
+
+    /** Try to add the token and return `true` if succeeds */
+    addToken = async (token: string) => {
+        const { isOk, fullMsg } = await this.runCli([
+            'configure',
+            `--token=${token}`,
+        ]);
+
+        if (!isOk && fullMsg.includes('is invalid.')) return false
+        if (!isOk) throw 'Unhandled';
+
+        return true;
+    }
 
     getToken = async () => {
+        let token: string | null = null;
         const { isOk, exitCode, fullMsg } = await this.runCli(['configure', 'help']);
-        if (!isOk) throw `getToken(): Exited with code ${exitCode} (no OK)`;
+        if (!isOk) {
+            if (fullMsg.includes('Error: There is no token configured.')) {
+                token = await ask.addToken()
+            }
 
-        const token = fullMsg.split('\n').find(s => s.includes('Token:'))?.split(' ').at(-1)
+            throw `getToken(): Exited with code ${exitCode} (no OK)`;
+        } else {
+            token = fullMsg.split('\n').find(s => s.includes('Token:'))?.split(' ').at(-1) || null;
+        }
+
         if (!token) throw "Couldn't retrieve the token"
 
         return token
     }
-
 
     getWorkspace = async () => {
         const { isOk, exitCode, fullMsg } = await this.runCli(['workspace']);

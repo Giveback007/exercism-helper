@@ -1,20 +1,10 @@
-import { ExercismCLI } from "./exercism-cli";
-import { logErr, wait } from "./utils";
+import { logErr } from "./utils";
 
 export class ExercismAPI {
     private baseURL = "https://exercism.org/api/v2/"
-    private token: string | null = null;
-    constructor() {
-        const exercismCLI = new ExercismCLI();
-
-        (async () => {
-            this.token = await exercismCLI.getToken()
-        })();
-    }
+    constructor(private token: string) {}
 
     get = async <T>(resource: string) => {
-        while (!this.token) await wait(100);
-
         const res = await fetch(this.baseURL + resource, {
             headers: {
               Authorization: `Bearer ${this.token}`
