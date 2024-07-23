@@ -1,38 +1,24 @@
-# Exercism Helper (aka) `exer`
+# Exercism Download Helper (aka) `exer-h`
+This project is a small wrapper for the official **Exercism CLI**
+
+![Usage example](./screen-1.gif "a usage example")
 
 ### Note
-This project has only been tested to work in a linux environment (Ubuntu & Termux)
+Tested to work in linux env (Ubuntu & Termux)
 
-## Installing
-1. Install the official [Exercism CLI](https://exercism.org/docs/using/solving-exercises/working-locally)
-2. Add the [token](https://exercism.org/docs/using/solving-exercises/working-locally#h-configuration) to the cli config
-3. Install `Nodejs` and `npm`
-4. Clone this project with git:
+## Prerequisites
+- Official [`Exercism CLI`](https://exercism.org/docs/using/solving-exercises/working-locally)
+- [`Nodejs` and `npm`](https://nodejs.org/en/download/package-manager)
+
+## Install
 ```shell
-git clone https://github.com/Giveback007/exercism-helper.git
+npm i exer-h -g
 ```
 
-## Project Prep
-1. CD into 'exercism-helper' directory (this project)
-2. Install dependencies with `npm` or `pnpm`
+## Running the project
+Run the script anywhere in the terminal with:
 ```shell
-pnpm i
-```
-3. Make the project executable:
-```shell
-cd bin && chmod +x exer
-```
-1. Make the bin folder accessible anywhere, by adding this folders bin your .bashrc
-```shell
-nano ~/.bashrc
-```
-add this line to .bashrc
-```bash
-export PATH=$PATH:/path/to/exercism-helper/bin
-```
-1. Run the script anywhere in the terminal with:
-```shell
-exer
+exer-h
 ```
 
 
