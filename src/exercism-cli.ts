@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { errorAndExit } from "./error.util";
+import { errorAndExit } from "./utils/error.util";
 import { ask } from "./utils/ask.utils";
 
 export class ExercismCLI {

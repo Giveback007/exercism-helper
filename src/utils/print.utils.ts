@@ -8,7 +8,7 @@ export const print = {
  🔗 - Available For Download
  🔒 - Locked\n`),
 
-    nextExercise(exr: Exercise, track: string, ws: string) {
+    nextExercise(exr: _Exercise, track: string, ws: string) {
         log(`< Next Exercise >`)
         log(`(${exr.difficulty})`, `"${exr.title}"`)
         log('>>>', exr.blurb)
@@ -35,6 +35,7 @@ export const print = {
     downloadOutcome(outcome: DownloadOutcome) {
         log('\nResult:')
         if (outcome.ok) log(`💾 [${outcome.ok}] Downloaded Ok`)
+        if (outcome.completed) log(`🮱  [${outcome.completed}] Already Completed (Skipped)`)
         if (outcome.failed) logErr(`🚫 [${outcome.failed}] Failed (Unhandled reason)`);
         if (outcome.alreadyExists) logErr(`📦 [${outcome.alreadyExists}] Already downloaded (Skipped)`)
         if (outcome.locked) logErr(`🔒 [${outcome.locked}] Locked (Unable to download)`)

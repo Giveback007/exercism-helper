@@ -30,7 +30,7 @@ export class ExercismAPI {
     }
 
     getExercises = async (track: string, withToken = true) => {
-        const res = await this.get<{ exercises: Exercise[] }>(`tracks/${track}/exercises`, withToken);
+        const res = await this.get<{ exercises: _Exercise[] }>(`tracks/${track}/exercises`, withToken);
         if (!res.isOk) throw `Couldn't get the exercise list for [${track}]`;
 
         return res.data.exercises;

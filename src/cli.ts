@@ -35,50 +35,61 @@ wait(0).then(async () => {
 
         if (!Object.keys(tr.exercises).length) {
             log(`Loading exercises for: "${tr.track.title}"...\n`);
-            const _exrs = await API.getExercises(trackName);
+            const [exrsOrdered, _exrs] = await Promise.all([
+                // To have the correct order of the exercises calling the api without a token is required
+                API.getExercises(trackName, false),
+                // Completed exercises are ordered at the end when API is given a token
+                API.getExercises(trackName),
+            ]);
+
+            const exrsMap = new Map<string, Exercise>(exrsOrdered.map((x, idx) => [x.slug, {
+                ...x, idx, is_completed: false, is_downloaded: false,
+            }]))
 
             const completed = _exrs.slice(_exrs.length - tr.track.num_completed_exercises);
             const incomplete = _exrs.slice(0, _exrs.length - tr.track.num_completed_exercises);
 
             tr.track.num_unlocked_exercises = incomplete.filter(x => x.is_unlocked).length;
-            completed.forEach(x => x.is_completed = true);
+            completed.forEach(x => exrsMap.get(x.slug)!.is_completed = true);
 
-            const exrs = [...incomplete, ...completed];
-
-            exrs.forEach((ex) => {
+            exrsMap.forEach((ex) => {
                 ex.is_downloaded = tr.downloaded.has(ex.slug);
                 if (ex.is_completed && ex.is_downloaded) {
                     // ! TODO:
                     // "Deleting completed exercises..."
                 }
 
-                tr.exercises[ex.slug] = ex
+                tr.exercises[ex.slug] = ex;
             })
         }
 
         const exrs = Object.values(tr.exercises);
         print.exerciseTable(exrs, tr.track.slug, ws);
 
-        let numToDownload = await ask.howManyToDownload();
+        let toNumToDwld = await ask.howManyToDownload();
         console.clear();
 
-        const outcome = { alreadyExists: 0, locked: 0, ok: 0, failed: 0 };
+        const outcome = { alreadyExists: 0, locked: 0, ok: 0, failed: 0, completed: 0 };
 
         const nUnlocked = tr.track.num_unlocked_exercises!
         const nExercises = tr.track.num_exercises;
-        if (numToDownload > tr.track.num_unlocked_exercises!) {
-            outcome.locked = Math.min(numToDownload - nUnlocked, nExercises - nUnlocked)
-            log(`\n${numToDownload} is more that what is 'unlocked', downloading: ${nUnlocked} instead\n`);
-            numToDownload = nUnlocked;
+        if (toNumToDwld > tr.track.num_unlocked_exercises!) {
+            outcome.locked = Math.min(toNumToDwld - nUnlocked, nExercises - nUnlocked)
+            log(`\n${toNumToDwld} is more that what is 'unlocked', downloading: ${nUnlocked} instead\n`);
+            toNumToDwld = nUnlocked;
         }
 
-        const toDownload = Object.values(tr.exercises).filter(ex => ex.is_unlocked).slice(0, numToDownload);
+        const toDownload = Object.values(tr.exercises).filter(ex => ex.is_unlocked).slice(0, toNumToDwld);
 
-        log(`Downloading ${toDownload.length} exercises...\n`)
+        log(`Starting exercises downloads...\n`)
         await Promise.all(toDownload.map(async ex => {
+            if (ex.is_completed) {
+                outcome.completed++
+                return;
+            }
             if (ex.is_downloaded) {
                 outcome.alreadyExists++
-                return log(`"${ex.title}" is already downloaded (skipped)`)
+                return;
             }
 
             try {

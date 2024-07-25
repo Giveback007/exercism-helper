@@ -45,7 +45,7 @@ export const ask = {
         let numToDownload: number | null = null;
         while (numToDownload === null) {
             log("\ntype 'exit' to quit");
-            const response = await rl.question(`How many non-completed to download: `);
+            const response = await rl.question(`Up to what number to download: `);
             if (response === 'exit') exit();
 
             numToDownload = Number(response);

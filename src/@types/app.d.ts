@@ -9,6 +9,7 @@ type DownloadOutcome = {
     locked: number;
     ok: number;
     failed: number;
+    completed: number;
 }
 
 interface LangTrack {
@@ -36,7 +37,7 @@ interface LangTrack {
     num_unlocked_exercises?: number;
 }
 
-interface Exercise {
+type _Exercise = {
     slug: string;
     type: string;
     title: string;
@@ -49,7 +50,10 @@ interface Exercise {
     links: {
         self: string;
     };
+}
 
-    is_completed?: boolean;
-    is_downloaded?: boolean;
+type Exercise = _Exercise & {
+    is_completed: boolean;
+    is_downloaded: boolean;
+    idx: number;
 }
