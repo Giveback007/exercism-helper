@@ -1,6 +1,9 @@
 import { spawn } from "child_process";
-import { logErr, log, ask } from "./utils";
 import { errorAndExit } from "./error.util";
+import { ask } from "./utils/ask.utils";
+
+const log = console.log;
+const logErr = console.error;
 
 export class ExercismCLI {
     static runCli = (args: string[] = []) => new Promise<{

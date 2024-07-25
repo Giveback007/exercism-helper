@@ -2,9 +2,12 @@
 
 import { ExercismAPI } from './exercism-api';
 import { ExercismCLI } from './exercism-cli';
-import {
-    ask, loadTrackData, log, logErr, print, wait
-} from './utils';
+import { loadTrackData, wait } from './utils/app.utils';
+import { ask } from './utils/ask.utils';
+import { print } from './utils/print.utils';
+
+const log = console.log;
+const logErr = console.error;
 
 log('// -- Exercism Download Helper -- //')
 setTimeout(async () => {

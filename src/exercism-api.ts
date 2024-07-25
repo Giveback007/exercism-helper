@@ -1,4 +1,4 @@
-import { logErr } from "./utils";
+const logErr = console.error;
 
 export class ExercismAPI {
     private baseURL = "https://exercism.org/api/v2/"

@@ -1,3 +1,7 @@
+type str = string;
+type num = number;
+type bol = boolean;
+
 type Dict<T> = { [P: string]: T; };
 
 type TrackData = {

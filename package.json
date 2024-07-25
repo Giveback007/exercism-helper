@@ -1,11 +1,11 @@
 {
   "name": "exer-h",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Exercism-helper, a wrapper to help bulk download exercism lessons",
   "bin": "./dist/cli.js",
   "scripts": {
     "start": "tsx src/cli.ts",
-    "build": "pkgroll --clean-dist"
+    "build": "pkgroll --env.NODE_ENV=production --clean-dist"
   },
   "devDependencies": {
     "@types/node": "^20.14.11",
