@@ -2,9 +2,6 @@ import { spawn } from "child_process";
 import { errorAndExit } from "./error.util";
 import { ask } from "./utils/ask.utils";
 
-const log = console.log;
-const logErr = console.error;
-
 export class ExercismCLI {
     static runCli = (args: string[] = []) => new Promise<{
         fullMsg: string;
@@ -88,15 +85,13 @@ export class ExercismCLI {
 
     static downloadExr = async (track: string, exercise: string) => {
         const { allData, isOk, exitCode, fullMsg } = await this.runCli([
-            "download",
-            `--track=${track}`,
-            `--exercise=${exercise}`
+            "download", `--track=${track}`, `--exercise=${exercise}`
         ])
 
         const alreadyExists = allData.find(x => x.data.includes('already exists'))
         const notUnlocked = allData.find(x => x.data.includes('not unlocked'))
 
-        log('--- // --- // ---');
+        // log('--- // --- // ---');
         log(`${isOk ? '✅' : '❌'} [${track}]: "${exercise}":`)
         if (isOk) log(fullMsg)
         else logErr(fullMsg)

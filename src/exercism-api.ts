@@ -1,15 +1,13 @@
-const logErr = console.error;
-
 export class ExercismAPI {
     private baseURL = "https://exercism.org/api/v2/"
     constructor(private token: string) {}
 
-    get = async <T>(resource: string) => {
-        const res = await fetch(this.baseURL + resource, {
+    get = async <T>(resource: string, withToken = true) => {
+        const res = await fetch(this.baseURL + resource, withToken ? {
             headers: {
               Authorization: `Bearer ${this.token}`
             }
-        })
+        } : {})
 
         if (!res.ok) return { isOk: false, data: res } as const
 
@@ -21,8 +19,8 @@ export class ExercismAPI {
         }
     }
 
-    getTracks = async (filter?: string[]) => {
-        const res = await this.get<{ tracks: LangTrack[] }>('tracks');
+    getTracks = async (filter?: string[], withToken = true) => {
+        const res = await this.get<{ tracks: LangTrack[] }>('tracks', withToken);
         if (!res.isOk) throw "Couldn't get the track list";
 
         const tracks = res.data.tracks
@@ -31,8 +29,8 @@ export class ExercismAPI {
         return filter ? tracks.filter(x => set.has(x.slug)) : tracks;
     }
 
-    getExercises = async (track: string) => {
-        const res = await this.get<{ exercises: Exercise[] }>(`tracks/${track}/exercises`);
+    getExercises = async (track: string, withToken = true) => {
+        const res = await this.get<{ exercises: Exercise[] }>(`tracks/${track}/exercises`, withToken);
         if (!res.isOk) throw `Couldn't get the exercise list for [${track}]`;
 
         return res.data.exercises;

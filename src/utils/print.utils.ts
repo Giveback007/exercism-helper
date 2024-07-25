@@ -1,9 +1,6 @@
 import { join } from "path";
 import { makeTable } from "./table.utils";
 
-const log = console.log;
-const logErr = console.error;
-
 export const print = {
     exerciseTableKey: () => log(`\n Key:
  ✓ - Completed

@@ -1,9 +1,6 @@
 import { createInterface } from 'readline/promises';
 import { ExercismCLI } from "../exercism-cli";
 
-const log = console.log;
-const logErr = console.error;
-
 export const ask = {
     addToken: async (): Promise<string> => {
         const CLI = ExercismCLI;

@@ -1,16 +1,14 @@
 #!/usr/bin/env tsx
 
+import './init'
 import { ExercismAPI } from './exercism-api';
 import { ExercismCLI } from './exercism-cli';
 import { loadTrackData, wait } from './utils/app.utils';
 import { ask } from './utils/ask.utils';
 import { print } from './utils/print.utils';
 
-const log = console.log;
-const logErr = console.error;
-
 log('// -- Exercism Download Helper -- //')
-setTimeout(async () => {
+wait(0).then(async () => {
     log('Loading tracks...')
 
     const CLI = ExercismCLI;
@@ -64,7 +62,7 @@ setTimeout(async () => {
         let numToDownload = await ask.howManyToDownload();
         console.clear();
 
-        const outcome = { alreadyExists: 0, locked: 0, ok: 0, failed: 0 }
+        const outcome = { alreadyExists: 0, locked: 0, ok: 0, failed: 0 };
 
         const nUnlocked = tr.track.num_unlocked_exercises!
         const nExercises = tr.track.num_exercises;
