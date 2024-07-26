@@ -8,7 +8,7 @@ export const print = {
  🔗 - Available For Download
  🔒 - Locked\n`),
 
-    nextExercise(exr: _Exercise, track: string, ws: string) {
+    nextExercise(exr: Exercise, track: string, ws: string) {
         log(`< Next Exercise >`)
         log(`(${exr.difficulty})`, `"${exr.title}"`)
         log('>>>', exr.blurb)
@@ -29,13 +29,14 @@ export const print = {
         log(makeTable(['#', 'Name / Folder', ''], data))
 
         print.exerciseTableKey();
-        if (exrs[0]) print.nextExercise(exrs[0], track, ws)
+        const next = exrs.find(x => !x.is_completed)
+        if (next) print.nextExercise(next, track, ws)
     },
 
     downloadOutcome(outcome: DownloadOutcome) {
         log('\nResult:')
         if (outcome.ok) log(`💾 [${outcome.ok}] Downloaded Ok`)
-        if (outcome.completed) log(`🮱  [${outcome.completed}] Already Completed (Skipped)`)
+        if (outcome.completed) log(`✓ [${outcome.completed}] Already Completed (Skipped)`)
         if (outcome.failed) logErr(`🚫 [${outcome.failed}] Failed (Unhandled reason)`);
         if (outcome.alreadyExists) logErr(`📦 [${outcome.alreadyExists}] Already downloaded (Skipped)`)
         if (outcome.locked) logErr(`🔒 [${outcome.locked}] Locked (Unable to download)`)
