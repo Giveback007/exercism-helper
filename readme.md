@@ -21,6 +21,8 @@ Run the script anywhere in the terminal with:
 exer-h
 ```
 
+## Test 
+
 
 
 
